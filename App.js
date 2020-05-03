@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -9,6 +9,13 @@ import SignUpScreen from './src/screens/SignUpScreen';
 import TrackCreateScreen from './src/screens/TrackCreateScreen';
 import TrackDetailScreen from './src/screens/TrackDetailScreen';
 import TrackListScreen from './src/screens/TrackListScreen';
+
+import { navigationRef, isMountedRef } from './src/RootNavigation';
+
+import {
+  Context as AuthContext,
+  Provider as AuthProvider,
+} from './src/context/AuthContext';
 
 const AuthStack = createStackNavigator();
 
@@ -48,16 +55,26 @@ const AppTabScreen = () => {
 };
 
 const App = () => {
-  const [token, setToken] = useState(null);
+  const { state } = useContext(AuthContext);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => (isMountedRef.current = false);
+  }, []);
 
   return (
-    <NavigationContainer>
-      {token === null ? <AuthStackScreen /> : <AppTabScreen />}
+    <NavigationContainer ref={navigationRef}>
+      {state.token === null ? <AuthStackScreen /> : <AppTabScreen />}
     </NavigationContainer>
   );
 };
 
-export default App;
+export default () => (
+  <AuthProvider>
+    <App />
+  </AuthProvider>
+);
 
 /**
  * ---NOT Authenticated screens---
