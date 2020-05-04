@@ -6,14 +6,23 @@ import createDataContext from './createDataContext';
 import trackerApi from '../services/trackerApi';
 
 const authReducer = (state, action) => {
+  // state === { token: null || string, errorMessage: string }
   switch (action.type) {
     case '@auth/ADD_ERROR':
       return { ...state, errorMessage: action.payload };
+    case '@auth/CLEAR_ERROR_MESSAGE':
+      return { ...state, errorMessage: '' };
     case '@auth/SIGNIN':
       return { ...state, token: action.payload, errorMessage: '' };
     default:
       return state;
   }
+};
+
+const clearErrorMessage = (dispatch) => {
+  return () => {
+    dispatch({ type: '@auth/CLEAR_ERROR_MESSAGE' });
+  };
 };
 
 const signUp = (dispatch) => {
@@ -47,7 +56,6 @@ const signIn = (dispatch) => {
 
       await AsyncStorage.setItem('token', response.data.token);
       dispatch({ type: '@auth/SIGNIN', payload: response.data.token });
-      console.log('logged in');
     } catch (error) {
       dispatch({
         type: '@auth/ADD_ERROR',
@@ -65,6 +73,6 @@ const signOut = (dispatch) => {
 
 export const { Provider, Context } = createDataContext(
   authReducer,
-  { signUp, signIn, signOut },
+  { signUp, signIn, signOut, clearErrorMessage },
   { token: null, errorMessage: '' }
 );
