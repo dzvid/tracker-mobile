@@ -47,6 +47,7 @@ const signIn = (dispatch) => {
 
       await AsyncStorage.setItem('token', response.data.token);
       dispatch({ type: '@auth/SIGNIN', payload: response.data.token });
+      console.log('logged in');
     } catch (error) {
       dispatch({
         type: '@auth/ADD_ERROR',
