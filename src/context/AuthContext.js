@@ -6,13 +6,13 @@ import createDataContext from './createDataContext';
 import trackerApi from '../services/trackerApi';
 
 const authReducer = (state, action) => {
-  // state === { token: null || string, errorMessage: string }
+  // state === { token: null || string, errorMessage: string, isLoading: boolean }
   switch (action.type) {
     case '@auth/ADD_ERROR':
       return { ...state, errorMessage: action.payload };
     case '@auth/CLEAR_ERROR_MESSAGE':
       return { ...state, errorMessage: '' };
-    case '@auth/SIGNIN':
+    case '@auth/SIGN_IN':
       return {
         ...state,
         isLoading: false,
@@ -20,7 +20,10 @@ const authReducer = (state, action) => {
         errorMessage: '',
       };
     case '@auth/NO_TOKEN':
-      return { ...state, isLoading: false, token: null, errorMessage: '' };
+      return { ...state, isLoading: false };
+    case '@auth/SIGN_OUT':
+      return { ...state, token: null, errorMessage: '', isLoading: false };
+
     default:
       return state;
   }
@@ -31,7 +34,7 @@ const tryLocalSignIn = (dispatch) => {
     const token = await AsyncStorage.getItem('token');
 
     if (token) {
-      dispatch({ type: '@auth/SIGNIN', payload: token });
+      dispatch({ type: '@auth/SIGN_IN', payload: token });
     } else {
       dispatch({ type: '@auth/NO_TOKEN' });
     }
@@ -74,7 +77,7 @@ const signIn = (dispatch) => {
       });
 
       await AsyncStorage.setItem('token', response.data.token);
-      dispatch({ type: '@auth/SIGNIN', payload: response.data.token });
+      dispatch({ type: '@auth/SIGN_IN', payload: response.data.token });
     } catch (error) {
       dispatch({
         type: '@auth/ADD_ERROR',
@@ -85,8 +88,9 @@ const signIn = (dispatch) => {
 };
 
 const signOut = (dispatch) => {
-  return () => {
-    // somehow signOut
+  return async () => {
+    await AsyncStorage.removeItem('token');
+    dispatch({ type: '@auth/SIGN_OUT' });
   };
 };
 
