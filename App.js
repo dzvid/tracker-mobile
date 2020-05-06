@@ -9,6 +9,7 @@ import SignUpScreen from './src/screens/SignUpScreen';
 import TrackCreateScreen from './src/screens/TrackCreateScreen';
 import TrackDetailScreen from './src/screens/TrackDetailScreen';
 import TrackListScreen from './src/screens/TrackListScreen';
+import LoadingScreen from './src/screens/LoadingScreen';
 
 import { navigationRef, isMountedRef } from './src/RootNavigation';
 
@@ -62,6 +63,10 @@ const App = () => {
 
     return () => (isMountedRef.current = false);
   }, []);
+
+  if (state.isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <NavigationContainer ref={navigationRef}>
