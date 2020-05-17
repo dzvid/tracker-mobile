@@ -1,13 +1,18 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { Text } from 'react-native-elements';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-// import { Container } from './styles';
+import Map from '../components/Map';
+import Spacer from '../components/Spacer';
 
 function TrackCreateScreen() {
   return (
-    <View>
-      <Text>TrackCreateScreen</Text>
-    </View>
+    <SafeAreaView>
+      <Text h2>Create a Track</Text>
+
+      <Map />
+    </SafeAreaView>
   );
 }
 
