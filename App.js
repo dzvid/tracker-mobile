@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import AccountScreen from './src/screens/AccountScreen';
 import SignInScreen from './src/screens/SignInScreen';
@@ -9,6 +10,14 @@ import SignUpScreen from './src/screens/SignUpScreen';
 import TrackCreateScreen from './src/screens/TrackCreateScreen';
 import TrackDetailScreen from './src/screens/TrackDetailScreen';
 import TrackListScreen from './src/screens/TrackListScreen';
+import LoadingScreen from './src/screens/LoadingScreen';
+
+import { navigationRef, isMountedRef } from './src/RootNavigation';
+
+import {
+  Context as AuthContext,
+  Provider as AuthProvider,
+} from './src/context/AuthContext';
 
 const AuthStack = createStackNavigator();
 
@@ -48,16 +57,32 @@ const AppTabScreen = () => {
 };
 
 const App = () => {
-  const [token, setToken] = useState(null);
+  const { state } = useContext(AuthContext);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => (isMountedRef.current = false);
+  }, []);
+
+  if (state.isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
-    <NavigationContainer>
-      {token === null ? <AuthStackScreen /> : <AppTabScreen />}
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer ref={navigationRef}>
+        {state.token === null ? <AuthStackScreen /> : <AppTabScreen />}
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 };
 
-export default App;
+export default () => (
+  <AuthProvider>
+    <App />
+  </AuthProvider>
+);
 
 /**
  * ---NOT Authenticated screens---
