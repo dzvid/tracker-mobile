@@ -19,6 +19,8 @@ import {
   Provider as AuthProvider,
 } from './src/context/AuthContext';
 
+import { Provider as LocationProvider } from './src/context/LocationContext';
+
 const AuthStack = createStackNavigator();
 
 const AuthStackScreen = () => {
@@ -79,9 +81,11 @@ const App = () => {
 };
 
 export default () => (
-  <AuthProvider>
-    <App />
-  </AuthProvider>
+  <LocationProvider>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  </LocationProvider>
 );
 
 /**
