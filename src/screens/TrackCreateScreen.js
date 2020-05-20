@@ -13,8 +13,10 @@ import Map from '../components/Map';
 import TrackForm from '../components/TrackForm';
 
 function TrackCreateScreen({ isFocused }) {
-  const { addLocation } = useContext(LocationContext);
-  const [err] = useLocation(isFocused, addLocation);
+  const { state, addLocation } = useContext(LocationContext);
+  const [err] = useLocation(isFocused, (location) => {
+    addLocation(location, state.recording);
+  });
 
   return (
     <SafeAreaView>
