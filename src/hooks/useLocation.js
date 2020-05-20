@@ -9,8 +9,9 @@ import {
  * Accepts a callback to be executed everytime the user location is updated.
  * Returns a err, when the user does not allow permission to access the user location.
  */
-export default (callback) => {
+export default (shouldTrack, callback) => {
   const [err, setErr] = useState(false);
+  const [subscriber, setSubscriber] = useState(null);
 
   const startWatching = async () => {
     // To reset permissions:  adb shell pm reset-permissions
@@ -21,7 +22,7 @@ export default (callback) => {
     } else {
       setErr(false);
 
-      await watchPositionAsync(
+      const sub = await watchPositionAsync(
         {
           accuracy: Accuracy.BestForNavigation,
           timeInterval: 1000,
@@ -29,12 +30,19 @@ export default (callback) => {
         },
         callback
       );
+
+      setSubscriber(sub);
     }
   };
 
   useEffect(() => {
-    startWatching();
-  }, []);
+    if (shouldTrack) {
+      startWatching();
+    } else {
+      subscriber.remove();
+      setSubscriber(null);
+    }
+  }, [shouldTrack]);
 
   return [err];
 };
