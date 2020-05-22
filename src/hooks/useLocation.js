@@ -11,42 +11,41 @@ import {
  */
 export default (shouldTrack, callback) => {
   const [err, setErr] = useState(false);
-  const [subscriber, setSubscriber] = useState(null);
-
-  const startWatching = async () => {
-    // To reset permissions:  adb shell pm reset-permissions
-    const { status } = await requestPermissionsAsync();
-
-    if (status !== 'granted') {
-      setErr(true);
-    } else {
-      setErr(false);
-
-      const sub = await watchPositionAsync(
-        {
-          accuracy: Accuracy.BestForNavigation,
-          timeInterval: 1000,
-          distanceInterval: 10,
-        },
-        callback
-      );
-
-      setSubscriber(sub);
-    }
-  };
 
   useEffect(() => {
+    let subscriber = null;
+
+    const startWatching = async () => {
+      // To reset permissions:  adb shell pm reset-permissions
+      const { status } = await requestPermissionsAsync();
+
+      if (status !== 'granted') {
+        setErr(true);
+      } else {
+        setErr(false);
+
+        subscriber = await watchPositionAsync(
+          {
+            accuracy: Accuracy.BestForNavigation,
+            timeInterval: 1000,
+            distanceInterval: 10,
+          },
+          callback
+        );
+      }
+    };
+
     if (shouldTrack) {
       startWatching();
-    } else {
+    } else if (subscriber) {
       subscriber.remove();
-      setSubscriber(null);
+      subscriber = null;
     }
 
     return () => {
       if (subscriber) {
         subscriber.remove();
-        setSubscriber(null);
+        subscriber = null;
       }
     };
   }, [shouldTrack, callback]);
