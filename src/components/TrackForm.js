@@ -7,13 +7,11 @@ import Spacer from './Spacer';
 
 function TrackForm() {
   const {
-    state: { name, recording, locations },
+    state: { name, recording },
     startRecording,
     stopRecording,
     changeTrackName,
   } = useContext(LocationContext);
-
-  console.log(locations.length);
 
   return (
     <>
