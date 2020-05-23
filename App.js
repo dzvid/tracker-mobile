@@ -18,8 +18,8 @@ import {
   Context as AuthContext,
   Provider as AuthProvider,
 } from './src/context/AuthContext';
-
 import { Provider as LocationProvider } from './src/context/LocationContext';
+import { Provider as TrackProvider } from './src/context/TrackContext';
 
 const AuthStack = createStackNavigator();
 
@@ -81,11 +81,13 @@ const App = () => {
 };
 
 export default () => (
-  <LocationProvider>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
-  </LocationProvider>
+  <TrackProvider>
+    <LocationProvider>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </LocationProvider>
+  </TrackProvider>
 );
 
 /**

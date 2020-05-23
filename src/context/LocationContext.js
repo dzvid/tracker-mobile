@@ -1,3 +1,4 @@
+// All about tracking the users location + storing points
 import createDataContext from './createDataContext';
 
 const locationReducer = (state, action) => {
@@ -12,6 +13,8 @@ const locationReducer = (state, action) => {
       return { ...state, recording: true };
     case '@location/STOP_RECORDING':
       return { ...state, recording: false };
+    case '@location/RESET_LOCATIONS_CURRENT_TRACK':
+      return { ...state, name: '', locations: [] };
     default:
       return state;
   }
@@ -45,8 +48,20 @@ const addLocation = (dispatch) => {
   };
 };
 
+const resetLocationsCurrentTrack = (dispatch) => {
+  return () => {
+    dispatch({ type: '@location/RESET_LOCATIONS_CURRENT_TRACK' });
+  };
+};
+
 export const { Context, Provider } = createDataContext(
   locationReducer,
-  { startRecording, stopRecording, addLocation, changeTrackName },
+  {
+    startRecording,
+    stopRecording,
+    addLocation,
+    changeTrackName,
+    resetLocationsCurrentTrack,
+  },
   { name: '', recording: false, locations: [], currentLocation: null }
 );
