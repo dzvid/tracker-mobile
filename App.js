@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
 import AccountScreen from './src/screens/AccountScreen';
 import SignInScreen from './src/screens/SignInScreen';
@@ -18,6 +19,8 @@ import {
   Context as AuthContext,
   Provider as AuthProvider,
 } from './src/context/AuthContext';
+import { Provider as LocationProvider } from './src/context/LocationContext';
+import { Provider as TrackProvider } from './src/context/TrackContext';
 
 const AuthStack = createStackNavigator();
 
@@ -38,7 +41,13 @@ const TrackListStack = createStackNavigator();
 const TrackListScreens = () => {
   return (
     <TrackListStack.Navigator>
-      <TrackListStack.Screen name="TrackList" component={TrackListScreen} />
+      <TrackListStack.Screen
+        name="TrackList"
+        component={TrackListScreen}
+        options={{
+          title: 'Tracks',
+        }}
+      />
       <TrackListStack.Screen name="TrackDetail" component={TrackDetailScreen} />
     </TrackListStack.Navigator>
   );
@@ -48,9 +57,37 @@ const AppTab = createBottomTabNavigator();
 
 const AppTabScreen = () => {
   return (
-    <AppTab.Navigator>
-      <AppTab.Screen name="TrackListScreens" component={TrackListScreens} />
-      <AppTab.Screen name="TrackCreate" component={TrackCreateScreen} />
+    <AppTab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+
+          if (route.name === 'TrackListScreens') {
+            iconName = focused ? 'ios-list-box' : 'ios-list';
+          } else if (route.name === 'TrackCreate') {
+            iconName = focused ? 'ios-add-circle' : 'ios-add-circle-outline';
+          } else if (route.name === 'Account') {
+            iconName = 'ios-settings';
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+      })}
+    >
+      <AppTab.Screen
+        name="TrackListScreens"
+        component={TrackListScreens}
+        options={{
+          title: 'Tracks',
+        }}
+      />
+      <AppTab.Screen
+        name="TrackCreate"
+        component={TrackCreateScreen}
+        options={{
+          title: 'New track',
+        }}
+      />
       <AppTab.Screen name="Account" component={AccountScreen} />
     </AppTab.Navigator>
   );
@@ -79,9 +116,13 @@ const App = () => {
 };
 
 export default () => (
-  <AuthProvider>
-    <App />
-  </AuthProvider>
+  <TrackProvider>
+    <LocationProvider>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </LocationProvider>
+  </TrackProvider>
 );
 
 /**
